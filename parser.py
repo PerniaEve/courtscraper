@@ -1,6 +1,7 @@
 import json
 import os
 import csv
+from datetime import date
 fields = []
 
 def parse_har():
@@ -14,7 +15,7 @@ def parse_har():
                 content = json.loads(f.read())
                 data = get_data(content)
                 all_cases.append(data)
-                os.rename('input/'+file, 'processed/'+file)
+                os.rename('input/'+file, 'processed/'+str(date.today())+'_'+file)
     
     return all_cases
 
@@ -31,9 +32,11 @@ def get_data(content):
                 keys = d.keys()
                 for key in keys:
                     fields = d[key]["field names"]
+                    idx = fields.index('CASINTX')
                     values = d[key]["data"]
                     for v in values:
-                        all_values.append(v)
+                        if v[idx] == 'Eviction':
+                            all_values.append(v)
             except:
                 continue
     return all_values
@@ -55,5 +58,4 @@ for data in datasets:
         for i in range(0, len(fields)):
             case.update({fields[i]:values[i]})
         all_items.append(case)
-print(len(all_items))
 to_csv(all_items, 'formatted.csv')
