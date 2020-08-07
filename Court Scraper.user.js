@@ -11,9 +11,6 @@
 
 (function(open) {
     'use strict';
-    var maxDate = "";
-    var startDate = "";
-    var endDate = "";
     var initialized = false;
     var results = {
         columns: [],
@@ -90,11 +87,18 @@
                 $('#btnCF12_copy').click()
             }
             if(results.data.length > 0){
-                //var csvString = results.join("%0A");
+                var flat = results.data.flat();
+                var tempArr = [results.columns].concat(flat)
+                var csvArr = []
+                tempArr.forEach(function(c){
+                    csvArr.push(c.join(','));
+                });
+                var csvString = csvArr.join("\r\n");
                 var a = document.createElement('a');
-                a.href = 'data:attachment/json,' + encodeURIComponent(JSON.stringify(results));
+
+                a.href = 'data:attachment/csv,' + encodeURIComponent(csvString);
                 a.target = '_blank';
-                a.download = 'court_export.json';
+                a.download = 'court_export.csv';
                 a.style = btnStyle;
                 a.innerText = "Export Results";
 
@@ -112,7 +116,6 @@
         var theMonth = endDate.getMonth() + 1;
         if (theMonth < 10) theMonth = "0" + theMonth
         var formatted = `${theMonth}/${endDate.getDate()}/${endDate.getFullYear()}`
-        console.log(days, endDate, formatted)
         $('#ToDate').val(formatted);
         $('#btnSubmit').click();
     }
